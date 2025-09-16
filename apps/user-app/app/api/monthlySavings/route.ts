@@ -3,7 +3,15 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../../lib/auth";
 import { format } from "date-fns";
-
+import {
+  allTrnxProps,
+  onRampTrnxProps,
+  p2pTrnxProps,
+} from "../creditDebit/route";
+interface monSavingsProps {
+  month: string;
+  savings: number;
+}
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -36,12 +44,12 @@ export async function GET() {
     });
 
     const allTxns = [
-      ...onRamps.map((t) => ({
+      ...onRamps.map((t: onRampTrnxProps) => ({
         date: t.createdAt.toISOString() || "",
         credit: t.amount,
         debit: 0,
       })),
-      ...p2ps.map((t) => ({
+      ...p2ps.map((t: p2pTrnxProps) => ({
         date: t.createdAt.toISOString() || "",
         credit: t.receiverId === session?.user.uid ? t.amount : 0,
         debit: t.senderId === session?.user.uid ? t.amount : 0,
@@ -50,7 +58,7 @@ export async function GET() {
 
     const grouped: Record<string, { month: string; savings: number }> = {};
 
-    allTxns.forEach((txn) => {
+    allTxns.forEach((txn: allTrnxProps) => {
       const d = new Date(txn.date);
       const key = format(d, "yyyy-MM");
       if (!grouped[key]) {
@@ -63,7 +71,7 @@ export async function GET() {
     });
     const data = Object.values(grouped)
       .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime())
-      .map((d) => ({
+      .map((d: monSavingsProps) => ({
         month: format(new Date(d.month + "-01"), "MMM"),
         savings: (d.savings / 100).toFixed(2),
       }));

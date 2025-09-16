@@ -14,6 +14,24 @@ import {
 } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 
+export interface onRampTrnxProps {
+  createdAt: Date;
+  amount: number;
+}
+
+export interface p2pTrnxProps {
+  createdAt: Date;
+  amount: number;
+  senderId: string;
+  receiverId: string;
+}
+
+export interface allTrnxProps {
+  date: string;
+  credit: number;
+  debit: number;
+}
+
 export async function GET(req: NextRequest) {
   let start;
   let end;
@@ -70,12 +88,12 @@ export async function GET(req: NextRequest) {
     });
 
     const allTxns = [
-      ...onRamps.map((t) => ({
+      ...onRamps.map((t: onRampTrnxProps) => ({
         date: t.createdAt.toISOString() || "",
         credit: t.amount,
         debit: 0,
       })),
-      ...p2ps.map((t) => ({
+      ...p2ps.map((t: p2pTrnxProps) => ({
         date: t.createdAt.toISOString() || "",
         credit: t.receiverId === session?.user.uid ? t.amount : 0,
         debit: t.senderId === session?.user.uid ? t.amount : 0,
@@ -87,7 +105,7 @@ export async function GET(req: NextRequest) {
       { date: string; credit: number; debit: number }
     > = {};
 
-    allTxns.forEach((txn) => {
+    allTxns.forEach((txn: allTrnxProps) => {
       let key = "";
 
       if (timePeriod === "Today") {

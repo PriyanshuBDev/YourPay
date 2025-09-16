@@ -2,6 +2,37 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../../../../../lib/auth";
 import prisma from "@repo/db/client";
+import { allRecentTrnxProps } from "../../../byDate/route";
+
+export interface P2PProps {
+  status: string;
+  id: string;
+  createdAt: Date;
+  sender: {
+    username: string;
+    profileImg: string;
+  };
+  receiver: {
+    username: string;
+    profileImg: string;
+  };
+  receiverId: string;
+  senderId: string;
+  amount: number;
+  category: {
+    name: string;
+  } | null;
+}
+
+export interface OnRampProps {
+  id: string;
+  createdAt: Date;
+  token: string;
+  UserId: string;
+  status: string;
+  amount: number;
+  provider: string;
+}
 
 export async function GET(
   req: Request,
@@ -64,7 +95,7 @@ export async function GET(
     LIMIT ${take}
     OFFSET ${skip}
     `;
-      const recentTrnxs = lastTxns.map((txn) => ({
+      const recentTrnxs = lastTxns.map((txn: allRecentTrnxProps) => ({
         id: txn.id,
         date: txn.createdAt.toISOString(),
         status: txn.status,
@@ -128,7 +159,7 @@ export async function GET(
         },
       });
 
-      const p2PTrnxs = p2p.map((p) => ({
+      const p2PTrnxs = p2p.map((p: P2PProps) => ({
         id: p.id,
         status: p.status,
         date: p.createdAt.toISOString(),
@@ -156,7 +187,7 @@ export async function GET(
           UserId: id,
         },
       });
-      const topUpTrnxs = topUps.map((t) => ({
+      const topUpTrnxs = topUps.map((t: OnRampProps) => ({
         id: t.id,
         status: t.status,
         credit: t.amount,

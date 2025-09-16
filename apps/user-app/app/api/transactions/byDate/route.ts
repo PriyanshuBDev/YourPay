@@ -4,6 +4,18 @@ import { authOptions } from "../../../../lib/auth";
 import prisma from "@repo/db/client";
 import { Prisma } from "@prisma/client";
 
+export interface allRecentTrnxProps {
+  id: string;
+  createdAt: Date;
+  credit: number;
+  debit: number;
+  recipient: string;
+  profileImg: string;
+  status: string;
+  category: string;
+  type: string;
+}
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const id = session?.user.uid;
@@ -91,7 +103,7 @@ export async function GET(req: NextRequest) {
     LIMIT ${take}
     OFFSET ${skip}
     `;
-    const recentTrnxs = lastTxns.map((txn) => ({
+    const recentTrnxs = lastTxns.map((txn: allRecentTrnxProps) => ({
       id: txn.id,
       date: txn.createdAt.toISOString(),
       status: txn.status,

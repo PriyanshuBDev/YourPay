@@ -2,6 +2,8 @@ import prisma from "@repo/db/client";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../../../lib/auth";
+import { allRecentTrnxProps } from "../byDate/route";
+import { OnRampProps, P2PProps } from "../full/[type]/[page]/route";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -50,7 +52,7 @@ export async function GET(req: NextRequest) {
     ORDER BY "createdAt" DESC
     LIMIT 5
     `;
-      const recentTrnxs = lastTxns.map((txn) => ({
+      const recentTrnxs = lastTxns.map((txn: allRecentTrnxProps) => ({
         id: txn.id,
         date: txn.createdAt.toISOString(),
         status: txn.status,
@@ -100,7 +102,7 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      const recentP2PTrnxs = p2p.map((p) => ({
+      const recentP2PTrnxs = p2p.map((p: P2PProps) => ({
         id: p.id,
         status: p.status,
         date: p.createdAt.toISOString(),
@@ -125,7 +127,7 @@ export async function GET(req: NextRequest) {
           UserId: id,
         },
       });
-      const recentTopUps = topUps.map((t) => ({
+      const recentTopUps = topUps.map((t: OnRampProps) => ({
         id: t.id,
         status: t.status,
         credit: t.amount,

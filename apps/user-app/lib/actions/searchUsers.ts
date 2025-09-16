@@ -4,6 +4,14 @@ import prisma from "@repo/db/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 
+interface UsersProps {
+  id: string;
+  email: string;
+  username: string;
+  publicId: string;
+  profileImg: string;
+}
+
 export async function searchUsers(input: string) {
   const session = await getServerSession(authOptions);
   try {
@@ -26,7 +34,7 @@ export async function searchUsers(input: string) {
         email: true,
       },
     });
-    const userIds = users.map((u) => u.id);
+    const userIds = users.map((u: UsersProps) => u.id);
     const isQUser = await prisma.quickUser.findMany({
       where: {
         userId: session?.user.uid,
@@ -36,8 +44,10 @@ export async function searchUsers(input: string) {
         qUserId: true,
       },
     });
-    const qUserSet = new Set(isQUser.map((q) => q.qUserId));
-    const completeUsers = users.map((u) => ({
+    const qUserSet = new Set(
+      isQUser.map((q: { qUserId: string }) => q.qUserId)
+    );
+    const completeUsers = users.map((u: UsersProps) => ({
       ...u,
       isAQUser: qUserSet.has(u.id),
     }));

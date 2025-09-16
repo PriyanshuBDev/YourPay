@@ -2,6 +2,7 @@ import prisma from "@repo/db/client";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../../../lib/auth";
+import { allRecentTrnxProps } from "../byDate/route";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -86,7 +87,7 @@ export async function GET(req: NextRequest) {
     LIMIT ${take}
     OFFSET ${skip}
     `;
-    const trnxs = searchTrnxs.map((txn) => ({
+    const trnxs = searchTrnxs.map((txn: allRecentTrnxProps) => ({
       id: txn.id,
       date: txn.createdAt.toISOString(),
       status: txn.status,

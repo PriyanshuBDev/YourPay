@@ -1,5 +1,3 @@
-"use server";
-
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import prisma from "@repo/db/client";
@@ -15,6 +13,12 @@ import {
   startOfYear,
 } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
+import { onRampTrnxProps } from "../creditDebit/route";
+
+interface allOnRampTrnxProps {
+  date: string;
+  credit: number;
+}
 
 export async function GET(req: NextRequest) {
   let start;
@@ -58,7 +62,7 @@ export async function GET(req: NextRequest) {
     });
 
     const allTxns = [
-      ...onRamps.map((t) => ({
+      ...onRamps.map((t: onRampTrnxProps) => ({
         date: t.createdAt.toISOString() || "",
         credit: t.amount,
       })),
@@ -66,7 +70,7 @@ export async function GET(req: NextRequest) {
 
     const grouped: Record<string, { date: string; credit: number }> = {};
 
-    allTxns.forEach((txn) => {
+    allTxns.forEach((txn: allOnRampTrnxProps) => {
       let key = "";
 
       if (timePeriod === "Today") {

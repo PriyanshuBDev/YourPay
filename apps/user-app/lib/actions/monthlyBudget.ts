@@ -5,6 +5,17 @@ import { getServerSession } from "next-auth";
 import { endOfMonth, startOfMonth } from "date-fns";
 import { authOptions } from "../auth";
 
+interface MonthlyBudgetProps {
+  p2p: {
+    amount: number;
+  }[];
+
+  id: string;
+  name: string;
+  userId: string;
+  limit: number;
+}
+
 export async function getMontlyBudget() {
   const session = await getServerSession(authOptions);
   const id = session?.user.uid;
@@ -32,11 +43,14 @@ export async function getMontlyBudget() {
       },
     });
 
-    const budget = categories.map((c) => ({
+    const budget = categories.map((c: MonthlyBudgetProps) => ({
       id: c.id,
       limit: c.limit,
       name: c.name,
-      spent: c.p2p.reduce((sum, t) => sum + t.amount, 0),
+      spent: c.p2p.reduce(
+        (sum: number, t: { amount: number }) => sum + t.amount,
+        0
+      ),
     }));
 
     return {
