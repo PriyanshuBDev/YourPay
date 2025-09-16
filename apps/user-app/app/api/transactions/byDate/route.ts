@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../../../lib/auth";
 import prisma from "@repo/db/client";
-import { Prisma } from "@prisma/client";
 
 export interface allRecentTrnxProps {
   id: string;
@@ -46,24 +45,7 @@ export async function GET(req: NextRequest) {
           },
         }
       : {};
-
-  const onRampDateSql =
-    from || to
-      ? Prisma.sql`
-      AND "createdAt" BETWEEN
-        ${from ? new Date(from) : new Date("1970-01-01")}
-        AND ${to ? new Date(to) : Prisma.sql`NOW()`}
-    `
-      : Prisma.empty;
-
-  const p2pDateSql =
-    from || to
-      ? Prisma.sql`
-      AND p."createdAt" BETWEEN
-        ${from ? new Date(from) : new Date("1970-01-01")}
-        AND ${to ? new Date(to) : Prisma.sql`NOW()`}
-    `
-      : Prisma.empty;
+  const now = new Date();
 
   try {
     const lastTxns = await prisma.$queryRaw<
@@ -83,7 +65,8 @@ export async function GET(req: NextRequest) {
       SELECT id, "createdAt", amount as credit, 0 as debit, provider as recipient, 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y' as "profileImg", status, 'None' as category, 'onRamp' as type
       FROM "OnRampTransaction"
       WHERE "UserId" = ${id}
-      ${onRampDateSql}
+        AND ("createdAt" >= ${from ? new Date(from) : new Date("1970-01-01")})
+        AND ("createdAt" <= ${to ? new Date(to) : now})
     )
     UNION ALL
     (
@@ -97,7 +80,8 @@ export async function GET(req: NextRequest) {
       JOIN "User" r on p."receiverId" = r.id
       LEFT JOIN  "Category" c on p."categoryId" = c.id
       WHERE (p."senderId" = ${id} OR p."receiverId" = ${id})
-      ${p2pDateSql}
+        AND ("createdAt" >= ${from ? new Date(from) : new Date("1970-01-01")})
+        AND ("createdAt" <= ${to ? new Date(to) : now})
     )
     ORDER BY "createdAt" DESC
     LIMIT ${take}
