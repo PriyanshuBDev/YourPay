@@ -5,12 +5,14 @@ import { format } from "date-fns";
 import Image from "next/image";
 import QuickUserBtn from "../../../../components/QuickUserBtn";
 
-export default async function TrnxById({
-  searchParams,
-}: {
-  searchParams: { id: string };
-}) {
-  const { id } = await searchParams;
+interface trnxByIdPageProps {
+  searchParams?: {
+    id?: string;
+  };
+}
+
+export default async function TrnxById({ searchParams }: trnxByIdPageProps) {
+  const id = searchParams?.id ?? "";
   if (!id) {
     redirect("/transactions/history");
   }
@@ -177,7 +179,7 @@ export default async function TrnxById({
                 {trnx.recipient!.publicId && (
                   <div>{trnx.recipient!.publicId}</div>
                 )}
-                {trnx.recipient!.number && <div>{trnx.recipient!.number}</div>}
+                {trnx.recipient!.email && <div>{trnx.recipient!.email}</div>}
               </div>
               {trnx.recipient!.isQUser != null && (
                 <QuickUserBtn

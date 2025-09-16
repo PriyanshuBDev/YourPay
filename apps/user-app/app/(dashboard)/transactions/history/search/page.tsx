@@ -4,13 +4,25 @@ import SearchTrnxBar from "../../../../../components/SearchTrnxBar";
 import SearchTrnxDate from "../../../../../components/SearchTrnxDate";
 
 import SearchTrnxTable from "../../../../../components/SearchTrnxTable";
+import { redirect } from "next/navigation";
+
+interface trnxSearchPageProps {
+  searchParams?: {
+    input?: string;
+    to?: string;
+    from?: string;
+  };
+}
 
 export default async function SearchUser({
   searchParams,
-}: {
-  searchParams: { input?: string; to?: string; from?: string };
-}) {
-  const { input, to, from } = await searchParams;
+}: trnxSearchPageProps) {
+  const input = searchParams?.input ?? "";
+  const to = searchParams?.to ?? "";
+  const from = searchParams?.from ?? "";
+  if (!input && !to && !from) {
+    redirect("/transactions/history");
+  }
   let formatedTo;
   let formatedFrom;
   if (to && from) {

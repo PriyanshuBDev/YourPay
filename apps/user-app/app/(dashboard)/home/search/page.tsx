@@ -21,12 +21,13 @@ import { searchUsers } from "../../../../lib/actions/searchUsers";
 //     isQUser: false,
 //   },
 // ];
-export default async function SearchUser({
-  searchParams,
-}: {
-  searchParams: { input: string };
-}) {
-  const { input } = searchParams;
+interface SearchPageProps {
+  searchParams?: {
+    input?: string;
+  };
+}
+export default async function SearchUser({ searchParams }: SearchPageProps) {
+  const input = searchParams?.input ?? "";
   if (!input || input.trim().length === 0) {
     redirect("/home");
   }
