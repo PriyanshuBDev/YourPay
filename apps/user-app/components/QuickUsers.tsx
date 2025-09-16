@@ -74,7 +74,19 @@ export default function QuickUsers({ setUser }: Props) {
   useEffect(() => {
     async function handleFetching() {
       const qUsers = await getQuickUsers();
-      setQUsers(qUsers.map((q) => q.qUser));
+      setQUsers(
+        qUsers.map(
+          (q: {
+            qUser: {
+              id: string;
+              email: string;
+              username: string;
+              publicId: string;
+              profileImg: string;
+            };
+          }) => q.qUser
+        )
+      );
       setLoading(false);
     }
     handleFetching();
