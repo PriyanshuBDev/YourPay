@@ -26,7 +26,7 @@ export default async function SearchUser({
 }: {
   searchParams: { input: string };
 }) {
-  const { input } = await searchParams;
+  const { input } = searchParams;
   if (!input || input.trim().length === 0) {
     redirect("/home");
   }

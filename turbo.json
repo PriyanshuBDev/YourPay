@@ -6,6 +6,7 @@
       "env": [
         "NEXTAUTH_URL",
         "NEXTAUTH_SECRET",
+        "JWT_SECRET",
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
         "NEXT_PUBLIC_FIREBASE_API_KEY",
