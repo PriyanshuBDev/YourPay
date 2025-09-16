@@ -1,0 +1,24 @@
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-custom::-webkit-scrollbar {
+  height: 8px; /* for horizontal scrollbars */
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f3f4f6; /* Tailwind gray-100 */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #a855f7; /* Tailwind purple-600 */
+  border-radius: 9999px; /* fully rounded */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #7e22ce; /* darker purple on hover */
+}

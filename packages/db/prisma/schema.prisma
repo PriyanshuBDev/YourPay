@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id                      String   @id 
+  username                String   @unique
+  email                   String  @unique
+  password                String
+  publicId                String   @unique
+  profileImg              String   @default("https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y")
+  onRampTransaction       OnRampTransaction[]
+  balance                 Balance?
+  createdAt               DateTime @default(now())
+  sender                  P2PTransaction[] @relation("Sender")
+  receiver                P2PTransaction[] @relation("Receiver")
+  categories              Category[] 
+  quickUser               QuickUser[] @relation("toAccess")
+  mainUser                QuickUser[] @relation("adder")
+  sentNotification        Notification[] @relation("SentNotification")
+  receiveNotification     Notification[] @relation("ReceivedNotification")
+}
+
+model OnRampTransaction{
+  id                      String  @id  @default(uuid())
+  status                  OnRampStatus
+  token                   String     @unique
+  provider                String
+  amount                  Int
+  createdAt               DateTime @default(now())
+  UserId                  String
+  user                    User @relation(fields: [UserId], references: [id])
+  notification            Notification[]
+}
+
+model Balance{
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  amount                  Int  @default(0)
+  locked                  Int  @default(0)
+  user                    User @relation(fields: [userId], references: [id])
+}
+
+model P2PTransaction{
+  id                      String  @id @default(uuid())
+  status                  OnRampStatus
+  amount                  Int
+  senderId                String
+  sender                  User @relation("Sender", fields: [senderId], references: [id])
+  receiverId              String
+  receiver                User @relation("Receiver", fields: [receiverId], references: [id])
+  createdAt               DateTime @default(now())
+  categoryId              String?
+  category                Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  notification            Notification[]
+}
+
+model Category{
+  id                      String @id @default(uuid())
+  name                    String 
+  userId                  String
+  limit                   Int
+  user                    User @relation(fields: [userId], references: [id])
+  p2p                     P2PTransaction[]
+}
+
+model QuickUser{
+  id                     String @id @default(uuid())
+  qUserId                String
+  qUser                  User @relation("toAccess",fields: [qUserId], references: [id])
+  userId                 String 
+  user                   User @relation("adder",fields: [userId], references: [id])
+  @@unique([userId, qUserId])
+}
+
+model Notification{
+  id                     String @id @default(uuid())
+  type                   NotificationType
+  message                String
+  status                 OnRampStatus?
+  transactionId          String?
+  senderId               String?
+  receiverId             String
+  isRead                 Boolean @default(false)
+  createdAt              DateTime @default(now())
+  sender                 User?     @relation("SentNotification", fields: [senderId], references: [id])
+  receiver               User     @relation("ReceivedNotification", fields: [receiverId], references: [id]) 
+  onRampTransactionId    String?
+  onRampTransaction      OnRampTransaction? @relation(fields: [onRampTransactionId], references: [id])
+  p2pTransactionId       String?
+  p2pTransaction         P2PTransaction? @relation(fields: [p2pTransactionId], references: [id])
+}
+
+enum OnRampStatus {
+  Success
+  Failure
+  Processing
+}
+
+enum NotificationType {
+  Transaction
+  Reminder
+  System
+  Custom
+}

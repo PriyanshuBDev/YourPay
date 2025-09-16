@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@import "@repo/tailwind-config";
+@import "@repo/ui/styles.css";
+
+.recharts-wrapper path:focus,
+.recharts-wrapper g:focus,
+.recharts-wrapper:focus {
+  outline: none;
+  stroke: #fff;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input [type="number"] {
+  -moz-appearance: textfield;
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+  height: 8px; /* for horizontal scrollbars */
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #f3f4f6; /* Tailwind gray-100 */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #9333ea; /* Tailwind purple-600 */
+  border-radius: 9999px; /* fully rounded */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #7e22ce; /* darker purple on hover */
+}
+
+.flowing-gradient {
+  background: linear-gradient(270deg, #6b64ee, #7c3aed, #9333ea, #ec4899);
+  background-size: 300% 300%;
+  animation: gradientFlow 8s ease infinite;
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Respect user motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .flowing-gradient {
+    animation: none;
+    background-position: 50% 50%;
+  }
+}
+html {
+  scroll-behavior: smooth;
+}
