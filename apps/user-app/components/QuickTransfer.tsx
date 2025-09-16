@@ -156,7 +156,7 @@ export default function QuickTransfer() {
               qUsers.length < 4 ? "justify-center" : "justify-start"
             }`}
           >
-            {qUsers.map((q, i) => (
+            {qUsers.map((q: QUser, i: number) => (
               <div key={q.id} className="flex-shrink-0">
                 <div className="inline-flex justify-center w-full ">
                   <div
@@ -304,7 +304,7 @@ export default function QuickTransfer() {
                           </button>
                         </li>
 
-                        {categories.map((c) => (
+                        {categories.map((c: categories) => (
                           <li key={c.id}>
                             <button
                               onClick={() => {

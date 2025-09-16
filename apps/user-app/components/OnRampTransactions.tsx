@@ -1,5 +1,12 @@
 import { Card } from "@repo/ui/card";
 
+interface trnxProps {
+  time: Date;
+  amount: number;
+  status: string;
+  provider: string;
+}
+
 export const OnRampTransactions = ({
   transactions,
 }: {
@@ -21,7 +28,7 @@ export const OnRampTransactions = ({
   return (
     <Card title="Recent Transactions">
       <div className="pt-2">
-        {transactions.map((t, i) => (
+        {transactions.map((t: trnxProps, i: number) => (
           <div key={i} className="flex justify-between">
             <div>
               <div className="text-sm">Received INR</div>

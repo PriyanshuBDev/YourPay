@@ -115,7 +115,7 @@ export default function WalletPage() {
               className="py-2 text-sm text-gray-700 max-h-60 overflow-y-auto "
               aria-labelledby="dropdownDefaultButton"
             >
-              {banks.map((b, i) => (
+              {banks.map((b: string, i: number) => (
                 <li key={i}>
                   <button
                     onClick={() => {

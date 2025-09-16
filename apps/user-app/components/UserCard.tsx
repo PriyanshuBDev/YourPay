@@ -216,7 +216,7 @@ export default function UserCard({
                           </button>
                         </li>
 
-                        {categories.map((c) => (
+                        {categories.map((c: categories) => (
                           <li key={c.id}>
                             <button
                               onClick={() => {

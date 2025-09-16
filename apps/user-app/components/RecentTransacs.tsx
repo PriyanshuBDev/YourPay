@@ -159,7 +159,7 @@ export default function RecentTransacs() {
             </thead>
             <tbody>
               {trnxs.length > 0 &&
-                trnxs.map((t) => (
+                trnxs.map((t: TransactionCardProps) => (
                   <RecentTrnxCard
                     key={t.id}
                     profileImg={t.profileImg}
@@ -170,6 +170,7 @@ export default function RecentTransacs() {
                     date={t.date}
                     status={t.status}
                     id={t.id}
+                    isCategory={true}
                   />
                 ))}
             </tbody>

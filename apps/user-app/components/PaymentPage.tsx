@@ -169,7 +169,7 @@ export default function PaymentPage() {
                 </button>
               </li>
 
-              {categories.map((c) => (
+              {categories.map((c: categories) => (
                 <li key={c.id}>
                   <button
                     onClick={() => {

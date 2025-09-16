@@ -109,7 +109,7 @@ export default function QuickUsers({ setUser }: Props) {
             qUsers.length < 4 ? "justify-center" : "justify-start"
           }`}
         >
-          {qUsers.map((q) => (
+          {qUsers.map((q: QUser) => (
             <div key={q.id} className="flex-shrink-0">
               <div className="inline-flex justify-center w-full ">
                 <div

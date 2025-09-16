@@ -66,7 +66,7 @@ export default function NotificationPage() {
             ></Btn3>
           </div>
           <div className="flex flex-col lg:gap-5 md:gap-3 gap-1 w-full justify-center items-center">
-            {notifications.map((n, i) => (
+            {notifications.map((n: notifcationBinds, i: number) => (
               <NotificationCard
                 key={i}
                 createdAt={n.createdAt}

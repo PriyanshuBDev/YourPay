@@ -15,6 +15,13 @@ import RedirectButton from "./RedirectButton";
 //   { category: "Savings", value: 6700, limit: 7000 },
 // ];
 
+interface ProgressBarProps {
+  id: string;
+  limit: number;
+  name: string;
+  spent: number;
+}
+
 export default async function Budget() {
   const res = await getMontlyBudget();
   if (res.budget.length < 1) {
@@ -29,7 +36,7 @@ export default async function Budget() {
     <div className="overflow-y-auto h-76">
       {res.budget.length < 4 ? (
         <div>
-          {res.budget.map((b) => (
+          {res.budget.map((b: ProgressBarProps) => (
             <ProgressBar
               key={b.id}
               category={b.name}
@@ -42,7 +49,7 @@ export default async function Budget() {
           </div>
         </div>
       ) : (
-        res.budget.map((b) => (
+        res.budget.map((b: ProgressBarProps) => (
           <ProgressBar
             key={b.id}
             category={b.name}

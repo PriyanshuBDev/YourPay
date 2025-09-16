@@ -138,7 +138,7 @@ export default function TrnxTable() {
               </tr>
             </thead>
             <tbody>
-              {trnxs.map((t) => (
+              {trnxs.map((t: TransactionCardProps) => (
                 <TrnxCard
                   key={t.id}
                   profileImg={t.profileImg}

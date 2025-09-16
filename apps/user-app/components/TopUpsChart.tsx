@@ -53,6 +53,11 @@ interface AxiosTopUps {
   transactions: prop[];
 }
 
+export interface TabProps {
+  id: string;
+  label: string;
+}
+
 export default function TopUpsChart() {
   const tabs = [
     { id: "today", label: "Today" },
@@ -107,7 +112,7 @@ export default function TopUpsChart() {
                 width: `${93 / tabs.length}%`,
               }}
             />
-            {tabs.map((t, i) => (
+            {tabs.map((t: TabProps, i: number) => (
               <button
                 key={i}
                 onClick={() => {

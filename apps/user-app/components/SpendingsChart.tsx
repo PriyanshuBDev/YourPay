@@ -113,7 +113,7 @@ export default function SpendingsChart({ spends }: { spends: fullSpends[] }) {
             setActiveIndex(index === activeIndex ? null : index)
           }
         >
-          {spends.map((entry) => (
+          {spends.map((entry: fullSpends) => (
             <Cell
               key={`cell-${entry.name}`}
               fill="currentColor"

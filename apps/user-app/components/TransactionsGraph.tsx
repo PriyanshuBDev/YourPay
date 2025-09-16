@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import TransactionAreaChart from "./TransactionsChart";
 import { format } from "date-fns";
 import axios from "axios";
+import { TabProps } from "./TopUpsChart";
 
 const transactions = [
   { date: "01", credit: 500, debit: 200 },
@@ -69,7 +70,7 @@ export default function TransactionsGraph() {
               width: `${93 / tabs.length}%`,
             }}
           />
-          {tabs.map((t, i) => (
+          {tabs.map((t: TabProps, i: number) => (
             <button
               key={i}
               onClick={() => {

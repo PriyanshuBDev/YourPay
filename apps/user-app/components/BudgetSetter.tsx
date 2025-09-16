@@ -62,7 +62,7 @@ export default function BudgetSetter() {
       </div>
       {createdNames.length > 0 && (
         <div className={`grid lg:grid-cols-2 w-full mt-5 gap-x-5 gap-y-2`}>
-          {categories.map((c) => (
+          {categories.map((c: categoryProps) => (
             <div key={c.id} className="col-span-1 flex gap-2 w-full">
               <ProgressBar
                 limit={c.limit}
@@ -127,7 +127,7 @@ export default function BudgetSetter() {
         <div>
           <div className="text-xl font-semibold my-5">Click To Add More</div>
           <div className={`grid lg:grid-cols-2 gap-x-5 gap-y-2`}>
-            {notCreated.map((n, i) => (
+            {notCreated.map((n: string, i: number) => (
               <div key={i} className="col-span-1">
                 <CategoryCard
                   onClick={() => {

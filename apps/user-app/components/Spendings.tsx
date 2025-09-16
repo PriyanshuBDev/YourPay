@@ -58,6 +58,16 @@ const categoryColors: Record<
   },
 };
 
+export interface fullSpendsProps {
+  color: string;
+  colorText: string;
+  colorText2: string;
+  id: string;
+  limit: number;
+  name: string;
+  spent: number;
+}
+
 export default async function Spendings() {
   const res = await getMontlyBudget();
   const fullSpends = res.budget.map((b) => {
@@ -84,7 +94,7 @@ export default async function Spendings() {
       </div>
 
       <div className="grid grid-cols-2 w-full pb-5">
-        {fullSpends.map((f, i) => (
+        {fullSpends.map((f: fullSpendsProps, i: number) => (
           <div key={i} className="flex gap-3 items-center">
             <div className={`px-1 rounded h-8 ${f.color}`}></div>
             <div className={`${f.colorText} text-lg`}>{f.name}</div>

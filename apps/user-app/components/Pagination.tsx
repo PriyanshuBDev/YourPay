@@ -45,7 +45,7 @@ export default function Pagination({
             </svg>
           </button>
         </div>
-        {Array.from({ length: totalPage }, (_, i) => (
+        {Array.from({ length: totalPage }, (_, i: number) => (
           <PageButton
             key={i}
             onClick={() => setPage(i + 1)}

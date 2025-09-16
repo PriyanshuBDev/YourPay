@@ -22,6 +22,15 @@ import { searchUsers } from "../../../../lib/actions/searchUsers";
 //   },
 // ];
 
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  publicId: string;
+  profileImg: string;
+  isAQUser: boolean;
+}
+
 export default async function SearchUser({
   searchParams,
 }: {
@@ -52,7 +61,7 @@ export default async function SearchUser({
         </div>
       ) : (
         <div className="grid 2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 lg:gap-5 md:gap-3 gap-1">
-          {users.map((u) => (
+          {users.map((u: User) => (
             <UserCard
               key={u.id}
               id={u.id}

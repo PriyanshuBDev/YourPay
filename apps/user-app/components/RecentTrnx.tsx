@@ -81,7 +81,7 @@ export default function RecentTrnx({
         </thead>
         <tbody>
           {trnxs.length > 0 &&
-            trnxs.map((t) => (
+            trnxs.map((t: TransactionCardProps) => (
               <RecentTrnxCard
                 key={t.id}
                 profileImg={t.profileImg}

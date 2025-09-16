@@ -111,7 +111,7 @@ export default function PaySearchUserBar({ setUser }: Props) {
                 className="py-2 text-sm text-gray-700 w-full"
                 aria-labelledby="dropdownDefaultButton"
               >
-                {searchedUsers.map((s) => (
+                {searchedUsers.map((s: UserProps) => (
                   <li key={s.id}>
                     <button
                       onClick={() => {
