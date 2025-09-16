@@ -21,9 +21,12 @@
         "NEXT_PUBLIC_CLOUDINARY_API_SECRET",
         "NEXT_PUBLIC_WEBHOOK_URL"
       ],
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "db#build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "postinstall": {
+      "outputs": []
     },
     "lint": {
       "dependsOn": ["^lint"]
