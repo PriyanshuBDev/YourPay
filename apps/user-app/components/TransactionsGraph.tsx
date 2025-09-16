@@ -38,7 +38,7 @@ export default function TransactionsGraph() {
         const res = await axios.get<AxiosTrnx>(
           `/api/creditDebit?timePeriod=${timePeriod}`
         );
-        const formatted = res.data.transactions.map((t) => {
+        const formatted = res.data.transactions.map((t: TrnxsProps) => {
           let label = "";
           if (timePeriod === "Today") {
             label = format(new Date(t.date), "HH:mm");

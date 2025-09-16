@@ -70,14 +70,16 @@ export interface fullSpendsProps {
 
 export default async function Spendings() {
   const res = await getMontlyBudget();
-  const fullSpends = res.budget.map((b) => {
-    const extra = categoryColors[b.name] || {
-      color: "bg-red-500",
-      colorText: "text-red-700",
-      colorText2: "text-red-500",
-    };
-    return { ...b, ...extra };
-  });
+  const fullSpends = res.budget.map(
+    (b: { id: string; limit: number; name: string; spent: number }) => {
+      const extra = categoryColors[b.name] || {
+        color: "bg-red-500",
+        colorText: "text-red-700",
+        colorText2: "text-red-500",
+      };
+      return { ...b, ...extra };
+    }
+  );
 
   if (fullSpends.length < 1) {
     return (

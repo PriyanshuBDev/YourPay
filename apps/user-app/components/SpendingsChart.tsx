@@ -61,7 +61,10 @@ const CustomTooltip = ({ active, payload, total }: any) => {
 };
 
 export default function SpendingsChart({ spends }: { spends: fullSpends[] }) {
-  const total = spends.reduce((acc, cur) => acc + cur.spent, 0);
+  const total = spends.reduce(
+    (acc: number, cur: fullSpends) => acc + cur.spent,
+    0
+  );
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 

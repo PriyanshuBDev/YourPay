@@ -74,7 +74,7 @@ export default function TopUpsChart() {
         const res = await axios.get<AxiosTopUps>(
           `/api/topUps?timePeriod=${timePeriod}`
         );
-        const formatted = res.data.transactions.map((t) => {
+        const formatted = res.data.transactions.map((t: prop) => {
           let label = "";
           if (timePeriod === "Today") {
             label = format(new Date(t.date), "HH:mm");
