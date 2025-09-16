@@ -2,7 +2,7 @@
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
-import prisma from "@repo/db/client";
+import prisma, { PrismaClient } from "@repo/db/client";
 import { checkPassword } from "./checkPassword";
 
 export async function p2pTransfer(
@@ -49,58 +49,70 @@ export async function p2pTransfer(
       status: 404,
     };
   }
-  const transaction = await prisma.$transaction(async (prisma) => {
-    const senderBalance = await prisma.balance.findUnique({
-      where: {
-        userId: session.user.uid,
-      },
-    });
-    if (!senderBalance || senderBalance.amount < amount) {
-      throw new Error("Insufficient Balance");
-    }
+  const transaction = await prisma.$transaction(
+    async (
+      prisma: Omit<
+        PrismaClient,
+        | "$connect"
+        | "$disconnect"
+        | "$on"
+        | "$transaction"
+        | "$use"
+        | "$extends"
+      >
+    ) => {
+      const senderBalance = await prisma.balance.findUnique({
+        where: {
+          userId: session.user.uid,
+        },
+      });
+      if (!senderBalance || senderBalance.amount < amount) {
+        throw new Error("Insufficient Balance");
+      }
 
-    await prisma.balance.update({
-      where: {
-        userId: session.user.uid,
-      },
-      data: {
-        amount: {
-          decrement: amount,
+      await prisma.balance.update({
+        where: {
+          userId: session.user.uid,
         },
-        locked: {
-          increment: amount,
-        },
-      },
-    });
-    return await prisma.p2PTransaction.create({
-      data: {
-        senderId: session.user.uid,
-        receiverId: userExist.id,
-        amount,
-        status: "Processing",
-        categoryId,
-      },
-      select: {
-        id: true,
-        status: true,
-        amount: true,
-        createdAt: true,
-        receiver: {
-          select: {
-            username: true,
-            profileImg: true,
-            publicId: true,
-            email: true,
+        data: {
+          amount: {
+            decrement: amount,
+          },
+          locked: {
+            increment: amount,
           },
         },
-        category: {
-          select: {
-            name: true,
+      });
+      return await prisma.p2PTransaction.create({
+        data: {
+          senderId: session.user.uid,
+          receiverId: userExist.id,
+          amount,
+          status: "Processing",
+          categoryId,
+        },
+        select: {
+          id: true,
+          status: true,
+          amount: true,
+          createdAt: true,
+          receiver: {
+            select: {
+              username: true,
+              profileImg: true,
+              publicId: true,
+              email: true,
+            },
+          },
+          category: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-    });
-  });
+      });
+    }
+  );
 
   if (!transaction.id || !transaction) {
     return {
@@ -119,59 +131,71 @@ export async function p2pTransfer(
     },
   });
   try {
-    await prisma.$transaction(async (tx) => {
-      const decrement = await tx.balance.updateMany({
-        where: {
-          userId: session.user.uid,
-        },
-        data: {
-          locked: {
-            decrement: amount,
+    await prisma.$transaction(
+      async (
+        tx: Omit<
+          PrismaClient,
+          | "$connect"
+          | "$disconnect"
+          | "$on"
+          | "$transaction"
+          | "$use"
+          | "$extends"
+        >
+      ) => {
+        const decrement = await tx.balance.updateMany({
+          where: {
+            userId: session.user.uid,
           },
-        },
-      });
-      if (decrement.count === 0) {
-        throw new Error("Error encountered");
-      }
+          data: {
+            locked: {
+              decrement: amount,
+            },
+          },
+        });
+        if (decrement.count === 0) {
+          throw new Error("Error encountered");
+        }
 
-      await tx.balance.update({
-        where: {
-          userId: userExist.id,
-        },
-        data: {
-          amount: {
-            increment: amount,
+        await tx.balance.update({
+          where: {
+            userId: userExist.id,
           },
-        },
-      });
-      await tx.p2PTransaction.update({
-        where: {
-          id: transaction.id,
-        },
-        data: {
-          status: "Success",
-        },
-      });
-      await tx.notification.create({
-        data: {
-          senderId: session.user.uid,
-          receiverId: userExist.id,
-          message: `₹${amount / 100} has been received from ${session.user.name}. Tap to view details.`,
-          type: "Transaction",
-          p2pTransactionId: transaction.id,
-          status: "Success",
-        },
-      });
-      await tx.notification.create({
-        data: {
-          receiverId: session.user.uid,
-          message: `₹${amount / 100} sent to ${userExist.username || "user"} successfully. Tap to view details.`,
-          type: "Transaction",
-          p2pTransactionId: transaction.id,
-          status: "Success",
-        },
-      });
-    });
+          data: {
+            amount: {
+              increment: amount,
+            },
+          },
+        });
+        await tx.p2PTransaction.update({
+          where: {
+            id: transaction.id,
+          },
+          data: {
+            status: "Success",
+          },
+        });
+        await tx.notification.create({
+          data: {
+            senderId: session.user.uid,
+            receiverId: userExist.id,
+            message: `₹${amount / 100} has been received from ${session.user.name}. Tap to view details.`,
+            type: "Transaction",
+            p2pTransactionId: transaction.id,
+            status: "Success",
+          },
+        });
+        await tx.notification.create({
+          data: {
+            receiverId: session.user.uid,
+            message: `₹${amount / 100} sent to ${userExist.username || "user"} successfully. Tap to view details.`,
+            type: "Transaction",
+            p2pTransactionId: transaction.id,
+            status: "Success",
+          },
+        });
+      }
+    );
     const success = { ...transaction, status: "Success" };
     return {
       msg: "Payment was successful",
@@ -179,39 +203,51 @@ export async function p2pTransfer(
       transaction: success,
     };
   } catch (e) {
-    await prisma.$transaction(async (prisma) => {
-      await prisma.p2PTransaction.updateMany({
-        where: {
-          id: transaction.id,
-          status: "Processing",
-        },
-        data: {
-          status: "Failure",
-        },
-      });
-      await prisma.balance.update({
-        where: {
-          userId: session.user.uid,
-        },
-        data: {
-          locked: {
-            decrement: amount,
+    await prisma.$transaction(
+      async (
+        prisma: Omit<
+          PrismaClient,
+          | "$connect"
+          | "$disconnect"
+          | "$on"
+          | "$transaction"
+          | "$use"
+          | "$extends"
+        >
+      ) => {
+        await prisma.p2PTransaction.updateMany({
+          where: {
+            id: transaction.id,
+            status: "Processing",
           },
-          amount: {
-            increment: amount,
+          data: {
+            status: "Failure",
           },
-        },
-      });
-      await prisma.notification.create({
-        data: {
-          receiverId: session.user.uid,
-          message: `Transfer of ₹${amount / 100} to ${userExist.username || "user"} failed. Amount refunded.`,
-          type: "Transaction",
-          p2pTransactionId: transaction.id,
-          status: "Failure",
-        },
-      });
-    });
+        });
+        await prisma.balance.update({
+          where: {
+            userId: session.user.uid,
+          },
+          data: {
+            locked: {
+              decrement: amount,
+            },
+            amount: {
+              increment: amount,
+            },
+          },
+        });
+        await prisma.notification.create({
+          data: {
+            receiverId: session.user.uid,
+            message: `Transfer of ₹${amount / 100} to ${userExist.username || "user"} failed. Amount refunded.`,
+            type: "Transaction",
+            p2pTransactionId: transaction.id,
+            status: "Failure",
+          },
+        });
+      }
+    );
     console.error("Error:", e instanceof Error ? e.message : e);
     return {
       msg: "Transaction failed, your payment has been refunded",
