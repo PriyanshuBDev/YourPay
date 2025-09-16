@@ -5,14 +5,12 @@ import { format } from "date-fns";
 import Image from "next/image";
 import QuickUserBtn from "../../../../components/QuickUserBtn";
 
-interface trnxByIdPageProps {
-  searchParams?: {
-    id?: string;
-  };
-}
-
-export default async function TrnxById({ searchParams }: trnxByIdPageProps) {
-  const id = searchParams?.id ?? "";
+export default async function TrnxById({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}) {
+  const id = (await searchParams).id || "";
   if (!id) {
     redirect("/transactions/history");
   }

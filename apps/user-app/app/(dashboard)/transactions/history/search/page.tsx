@@ -6,20 +6,14 @@ import SearchTrnxDate from "../../../../../components/SearchTrnxDate";
 import SearchTrnxTable from "../../../../../components/SearchTrnxTable";
 import { redirect } from "next/navigation";
 
-interface trnxSearchPageProps {
-  searchParams?: {
-    input?: string;
-    to?: string;
-    from?: string;
-  };
-}
-
 export default async function SearchUser({
   searchParams,
-}: trnxSearchPageProps) {
-  const input = searchParams?.input ?? "";
-  const to = searchParams?.to ?? "";
-  const from = searchParams?.from ?? "";
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}) {
+  const input = (await searchParams).input || "";
+  const to = (await searchParams).to || "";
+  const from = (await searchParams).from || "";
   if (!input && !to && !from) {
     redirect("/transactions/history");
   }
